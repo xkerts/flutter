@@ -1,9 +1,8 @@
+class Gif {
+  late String name;
+  late String url;
 
-class Gif{
-  String? name;
-  String? url;
-
-  Gif(name, url){
+  Gif(name, url) {
     this.name = name;
     this.url = url;
   }
