@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
       for (var item in jsonData["data"]) {
         gifs.add(Gif(item["title"], item["images"]["original"]["url"]));
       }
-      print(gifs);
+      //print(gifs);
       return gifs;
     } else {
       throw Exception("Fallo");
@@ -56,14 +56,14 @@ class _MyAppState extends State<MyApp> {
           future: _listadoGifs,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              print(snapshot.data);
+              //print(snapshot.data);
               return GridView.count(
                 crossAxisCount: 2,
                 children: _listGifs(snapshot.data!),
               );
             } else if (snapshot.hasError) {
-              print("error");
-              print(snapshot.error);
+              //print("error");
+              //print(snapshot.error);
               return Text("error");
             }
             return const Center(
