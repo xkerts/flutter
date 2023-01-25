@@ -1,97 +1,68 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:my_new_app_01/models/Gif.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:my_new_app_01/models/Gif.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
-
+class MyApp extends StatelessWidget{
   @override
-  State<MyApp> createState() => _MyAppState();
+  Widget build(BuildContext context){
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue
+      ),
+      home: MyHomePage(),
+    );
+  }
 }
 
-class _MyAppState extends State<MyApp> {
-  late Future<List<Gif>> _listadoGifs;
-
-  Future<List<Gif>> _getGifs() async {
-    final response = await http.get(Uri.parse(
-        "https://api.giphy.com/v1/gifs/trending?api_key=lIFGqBwUHdNuoaP7aMpPyGHKH9CCcUvW&limit=10&rating=g"));
-
-    List<Gif> gifs = [];
-    if (response.statusCode == 200) {
-      String body = utf8.decode(response.bodyBytes);
-      final jsonData = jsonDecode(body);
-
-      for (var item in jsonData["data"]) {
-        gifs.add(Gif(item["title"], item["images"]["original"]["url"]));
-      }
-      //print(gifs);
-      return gifs;
-    } else {
-      throw Exception("Fallo");
-    }
-  }
+class MyHomePage extends StatefulWidget {
 
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _listadoGifs = _getGifs();
-  }
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  var userController = TextEditingController();
+  var pwdController = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "Material App",
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Material App Bar'),
-        ),
-        body: FutureBuilder(
-          future: _listadoGifs,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              //print(snapshot.data);
-              return GridView.count(
-                crossAxisCount: 2,
-                children: _listGifs(snapshot.data!),
-              );
-            } else if (snapshot.hasError) {
-              //print("error");
-              //print(snapshot.error);
-              return Text("error");
-            }
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          },
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: SafeArea(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextFormField(
+                  controller: userController,
+                  decoration: InputDecoration(labelText: "Username", border: OutlineInputBorder(),suffixIcon: Icon(Icons.person)),
+                ),
+                SizedBox(height: 15,),
+                TextFormField(
+                  controller: pwdController,
+                  obscureText: true,
+                  decoration: InputDecoration(labelText: "Password", border: OutlineInputBorder(),suffixIcon: Icon(Icons.lock)),
+                ),
+                SizedBox(height: 45,),
+                OutlinedButton.icon(onPressed: (){login();}, icon: Icon(Icons.login, size: 18,), label: Text("Login"))
+              ],
+            )
+          )
         ),
       ),
     );
   }
 
-  List<Widget> _listGifs(List<Gif> data) {
-    List<Widget> gifs = [];
-
-    for (var gif in data) {
-      gifs.add(Card(
-          child: Column(
-        children: [
-          Expanded(
-            child: Image.network(
-              gif.url,
-              fit: BoxFit.fill,
-            ),
-          ),
-        ],
-      )));
-    }
-
-    return gifs;
+  //Creamos funcion para hacer login 
+  Future<void> login() async{
+    await http.post(Uri.parse("https://apiadmin.dts-ec.com/api/Auth/Login"), body: ({}));
   }
 }
